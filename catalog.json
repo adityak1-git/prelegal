@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Mutual Non-Disclosure Agreement",
+    "description": "Standard terms for a mutual non-disclosure agreement allowing each party to share confidential information for a specified purpose. Created by a committee of over 40 attorneys representing technology vendors, procurement teams, and law firms.",
+    "filename": "templates/Mutual-NDA.md"
+  },
+  {
+    "name": "Mutual Non-Disclosure Agreement Cover Page",
+    "description": "Cover page template for the Common Paper Mutual NDA. Parties complete this document with their specific terms (purpose, effective date, governing law) and sign it to form a binding MNDA incorporating the Standard Terms.",
+    "filename": "templates/Mutual-NDA-coverpage.md"
+  },
+  {
+    "name": "Cloud Service Agreement",
+    "description": "Standard agreement for selling and buying cloud software and SaaS products. Covers service access and use, restrictions, privacy and security, payment, term and termination, warranties, liability, indemnification, and confidentiality.",
+    "filename": "templates/CSA.md"
+  },
+  {
+    "name": "Design Partner Agreement",
+    "description": "Agreement for early-access design partners who test a product and provide feedback to help the provider develop and improve it. Covers product access, feedback obligations, IP ownership, confidentiality, and general terms.",
+    "filename": "templates/design-partner-agreement.md"
+  },
+  {
+    "name": "Service Level Agreement",
+    "description": "Agreement defining uptime and response time commitments for cloud services. Specifies how uptime is calculated, service credits available when commitments are missed, and customer remedies including termination rights.",
+    "filename": "templates/sla.md"
+  },
+  {
+    "name": "Professional Services Agreement",
+    "description": "Standard agreement for professional services engagements. Covers statements of work, deliverable ownership, IP rights, change orders, payment, confidentiality, indemnification, and insurance requirements.",
+    "filename": "templates/psa.md"
+  },
+  {
+    "name": "Data Processing Agreement",
+    "description": "Agreement governing the processing of personal data in compliance with GDPR, UK GDPR, and other data protection laws. Covers processor and subprocessor relationships, restricted transfers, SCCs, security incident response, audit rights, and data deletion.",
+    "filename": "templates/DPA.md"
+  },
+  {
+    "name": "Software License Agreement",
+    "description": "Standard agreement for licensing software to customers. Covers license grant, permitted uses, restrictions, updates, payment terms, warranties, limitation of liability, indemnification, and confidentiality for on-premise software deployments.",
+    "filename": "templates/Software-License-Agreement.md"
+  },
+  {
+    "name": "Partnership Agreement",
+    "description": "Standard agreement for establishing business partnerships. Covers mutual obligations, trademark licensing, payment terms, privacy, confidentiality, representations and warranties, indemnification, and escalation procedures.",
+    "filename": "templates/Partnership-Agreement.md"
+  },
+  {
+    "name": "Pilot Agreement",
+    "description": "Agreement for short-term pilot or trial access to a product before committing to a longer-term deal. Covers evaluation access, restrictions, confidentiality, liability limits, and transition to a definitive agreement.",
+    "filename": "templates/Pilot-Agreement.md"
+  },
+  {
+    "name": "Business Associate Agreement",
+    "description": "HIPAA-compliant agreement governing the handling of protected health information (PHI) by a business associate on behalf of a covered entity. Covers PHI safeguards, subcontractors, breach notification, individual rights, and audit obligations.",
+    "filename": "templates/BAA.md"
+  },
+  {
+    "name": "AI Addendum",
+    "description": "Addendum to be used alongside a base agreement when the provider offers AI or machine learning services. Covers permitted AI service use, model training restrictions, IP ownership of inputs and outputs, and AI-specific disclaimers.",
+    "filename": "templates/AI-Addendum.md"
+  }
+]
