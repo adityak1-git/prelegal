@@ -8,7 +8,7 @@ The available documents are covered in the catalog.json file in the project root
 
 @catalog.json
 
-The current implementation supports all 11 document types via AI chat with full user authentication and document persistence.
+The current implementation has the Mutual NDA Creator (one document type, no AI chat, no auth UI, no document persistence yet).
 
 ## Development process
 
@@ -26,16 +26,15 @@ There is an OPENROUTER_API_KEY in the .env file in the project root.
 
 ## Technical design
 
-The entire project should be packaged into a Docker container.  
-The backend should be in backend/ and be a uv project, using FastAPI.  
-The frontend should be in frontend/  
-The database should use SQLLite and be created from scratch each time the Docker container is brought up, allowing for a users table with sign up and sign in.  
-Consider statically building the frontend and serving it via FastAPI, if that will work.  
-There should be scripts in scripts/ for:  
+The entire project is packaged into a single Docker container (multi-stage build).  
+The backend is in `backend/` — a uv project using FastAPI, served at http://localhost:8000.  
+The frontend is in `frontend/` — Next.js, statically exported (`output: 'export'`) and served by FastAPI.  
+The database is SQLite, created fresh each time the Docker container is brought up, with a `users` table for sign up and sign in.  
+Scripts in `scripts/` handle start/stop:
 ```bash
 # Mac
-scripts/start-mac.sh    # Start
-scripts/stop-mac.sh     # Stop
+scripts/start-mac.sh    # Build image and start container
+scripts/stop-mac.sh     # Stop and remove container
 
 # Linux
 scripts/start-linux.sh
@@ -45,7 +44,20 @@ scripts/stop-linux.sh
 scripts/start-windows.ps1
 scripts/stop-windows.ps1
 ```
-Backend available at http://localhost:8000
+
+### Backend API endpoints
+- `GET  /api/health` — health check
+- `POST /api/auth/signup` — create account, returns JWT
+- `POST /api/auth/signin` — sign in, returns JWT
+
+### Local development (without Docker)
+```bash
+# Backend (terminal 1)
+cd backend && uv run uvicorn main:app --reload --port 8000
+
+# Frontend (terminal 2)
+cd frontend && npm run dev   # → http://localhost:3000
+```
 
 ## Color Scheme
 - Accent Yellow: `#ecad0a`
@@ -53,4 +65,14 @@ Backend available at http://localhost:8000
 - Purple Secondary: `#753991` (submit buttons)
 - Dark Navy: `#032147` (headings)
 - Gray Text: `#888888`
+
+## Implementation status
+
+| Ticket | Feature | Status |
+|--------|---------|--------|
+| PL-1 | Legal document templates (12 types in `templates/`, `catalog.json`) | Done |
+| PL-2 | Mutual NDA Creator UI (form + live preview + PDF download) | Done |
+| PL-3 | V1 foundation: FastAPI backend, SQLite auth, Docker, scripts | Done |
+
+**Not yet built:** AI chat, document persistence, auth UI (login/signup pages), support for document types beyond Mutual NDA.
 
