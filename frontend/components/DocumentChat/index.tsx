@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { NDAFormData } from '@/lib/nda-types';
+import { DocConfig } from '@/lib/doc-configs';
 import { API_BASE } from '@/lib/api';
 
 interface Message {
@@ -9,20 +9,13 @@ interface Message {
   content: string;
 }
 
-interface NDAFieldUpdates {
-  [key: string]: string | null | undefined;
-}
-
-interface ChatResponse {
-  message: string;
-  field_updates: NDAFieldUpdates;
-}
-
 interface Props {
-  onChange: (updates: Partial<NDAFormData>) => void;
+  docType: string;
+  config: DocConfig;
+  onChange: (updates: Record<string, string>) => void;
 }
 
-export function NDAChat({ onChange }: Props) {
+export function DocumentChat({ docType, config, onChange }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,17 +27,17 @@ export function NDAChat({ onChange }: Props) {
       const res = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ doc_type: 'mutual-nda', messages: msgs }),
+        body: JSON.stringify({ doc_type: docType, messages: msgs }),
       });
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const data: ChatResponse = await res.json();
+      const data: { message: string; field_updates: Record<string, string | null> } = await res.json();
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
 
-      const updates: Partial<NDAFormData> = {};
+      const updates: Record<string, string> = {};
       for (const [key, value] of Object.entries(data.field_updates)) {
         if (value !== null && value !== undefined) {
-          (updates as Record<string, unknown>)[key] = value;
+          updates[key] = value;
         }
       }
       if (Object.keys(updates).length > 0) {
@@ -72,19 +65,18 @@ export function NDAChat({ onChange }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!input.trim() || loading) return;
-
     const userMessage: Message = { role: 'user', content: input.trim() };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
+    const updated = [...messages, userMessage];
+    setMessages(updated);
     setInput('');
-    await callChatAPI(updatedMessages);
+    await callChatAPI(updated);
   }
 
   return (
     <div className="flex flex-col h-full min-h-0">
       <div className="mb-4 shrink-0">
         <h2 className="text-lg font-semibold text-[#032147]">AI Legal Assistant</h2>
-        <p className="text-sm text-[#888888]">Chat to create your Mutual NDA</p>
+        <p className="text-sm text-[#888888]">Chat to create your {config.name}</p>
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-3 mb-4 min-h-0 pr-1">
