@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { defaultFormData } from '@/lib/nda-types';
-import { NDAForm } from '@/components/NDAForm';
+import { NDAChat } from '@/components/NDAChat';
 import { NDAPreview } from '@/components/NDAPreview';
 
 const NDADownloadButton = dynamic(
@@ -24,9 +24,9 @@ export function NDACreator() {
 
   return (
     <div className="flex h-[calc(100vh-57px)]">
-      {/* Left: scrollable form */}
-      <div className="w-[45%] shrink-0 overflow-y-auto border-r border-gray-200 bg-white p-6">
-        <NDAForm data={formData} onChange={handleChange} />
+      {/* Left: AI Chat */}
+      <div className="w-[45%] shrink-0 flex flex-col overflow-hidden border-r border-gray-200 bg-white p-6">
+        <NDAChat onChange={handleChange} />
       </div>
 
       {/* Right: sticky header + scrollable preview */}
