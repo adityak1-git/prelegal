@@ -15,6 +15,9 @@ wheels/
 *.whl
 MANIFEST
 
+# SQLite databases
+*.db
+
 # Virtual environments
 .venv/
 venv/
