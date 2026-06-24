@@ -33,6 +33,10 @@ Party 2 ({party2_label}):
 - party2Date: Signature date (YYYY-MM-DD)
 """
 
+_ALWAYS_FOLLOW_UP = """
+CRITICAL RULE: If there are any fields still to collect, you MUST end every reply with a specific question asking the user for the next piece of information. Never leave the user without a clear prompt for what to provide next.
+"""
+
 _UNSUPPORTED_DOC_INSTRUCTION = """
 If the user asks you to create a different type of legal agreement that is not "{name}", explain that this tool session is specifically for creating a {name}. Let them know that PreLegal supports many other agreement types (NDA, Cloud Service Agreement, Pilot Agreement, Data Processing Agreement, and more). Offer to keep helping them complete this document, or suggest they go back to the document catalog to choose a different agreement type.
 """
@@ -550,7 +554,7 @@ def chat(request: ChatRequest):
 
     InternalResponse = _make_internal_response_class(request.doc_type, config["fields"])
 
-    messages = [{"role": "system", "content": config["system_prompt"]}]
+    messages = [{"role": "system", "content": config["system_prompt"] + _ALWAYS_FOLLOW_UP}]
     messages.extend([{"role": m.role, "content": m.content} for m in request.messages])
 
     response = completion(

@@ -78,7 +78,6 @@ export const DOC_CONFIGS: Record<string, DocConfig> = {
     party2Label: 'Party 2',
     sections: MNDA_SECTIONS,
     fields: MNDA_FIELDS,
-    ],
   },
 
   'csa': {

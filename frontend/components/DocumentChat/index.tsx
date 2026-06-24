@@ -20,6 +20,7 @@ export function DocumentChat({ docType, config, onChange }: Props) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   async function callChatAPI(msgs: Message[]) {
     setLoading(true);
@@ -54,7 +55,7 @@ export function DocumentChat({ docType, config, onChange }: Props) {
   }
 
   useEffect(() => {
-    callChatAPI([]);
+    callChatAPI([]).then(() => inputRef.current?.focus());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -70,6 +71,7 @@ export function DocumentChat({ docType, config, onChange }: Props) {
     setMessages(updated);
     setInput('');
     await callChatAPI(updated);
+    inputRef.current?.focus();
   }
 
   return (
@@ -111,6 +113,7 @@ export function DocumentChat({ docType, config, onChange }: Props) {
 
       <form onSubmit={handleSubmit} className="flex gap-2 shrink-0">
         <input
+          ref={inputRef}
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
