@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mutual NDA Creator — Prelegal",
-  description: "Fill in your details and generate a Mutual Non-Disclosure Agreement (Common Paper MNDA v1.0) ready to sign and download as PDF.",
+  title: "Prelegal — Legal Document Creator",
+  description: "Create legal agreements including NDAs, Cloud Service Agreements, Pilot Agreements, Data Processing Agreements, and more. Powered by Common Paper standard terms.",
 };
 
 export default function RootLayout({
