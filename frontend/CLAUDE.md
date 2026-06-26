@@ -80,7 +80,7 @@ cd frontend && npm run dev   # → http://localhost:3000
 | PL-3 | V1 foundation: FastAPI backend, SQLite auth, Docker, scripts | Done |
 | PL-4 | AI chat for Mutual NDA (replaces form; Cerebras/OpenRouter structured outputs) | Done |
 | PL-5 | Expand AI chat to all 12 supported document types (dynamic `/create/[docType]` route) | Done |
-| PL-6 | Multi-user auth UI, document history, legal disclaimer, SaaS polish | Done (PR #8) |
+| PL-6 | Multi-user auth UI, document history, legal disclaimer, SaaS polish | Done |
 
 ### PL-6 architecture notes
 
@@ -95,4 +95,6 @@ cd frontend && npm run dev   # → http://localhost:3000
 **Download utility:** All PDF downloads go through `triggerBlobDownload(blob, filename)` in `frontend/lib/download-utils.ts`. Uses `pdf().toBlob()` from `@react-pdf/renderer` (not `PDFDownloadLink`) so a proper async callback exists for the save API call.
 
 **Legal disclaimer:** Amber banner at the bottom of `DocumentPreview` and a styled block in all PDF documents (`DocumentPdfDocument`, `NDAPdfDocument`).
+
+**TypeScript / Docker note:** `playwright.config.ts` and `tests/` are excluded from `tsconfig.json` (`exclude` array). Both import `@playwright/test` which is not in `package.json`; locally Node resolves it from the project root `node_modules`, but inside Docker only `frontend/node_modules` exists, causing a TS2307 build failure. Always keep Playwright files excluded from the Next.js TS compilation.
 
