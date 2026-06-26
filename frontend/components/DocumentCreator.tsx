@@ -38,7 +38,7 @@ export function DocumentCreator({ docType }: Props) {
     <div className="flex h-[calc(100vh-57px)]">
       {/* Left: AI Chat */}
       <div className="w-[45%] shrink-0 flex flex-col overflow-hidden border-r border-gray-200 bg-white p-6">
-        <DocumentChat docType={docType} config={config} onChange={handleChange} />
+        <DocumentChat docType={docType} config={config} onChange={handleChange} fieldValues={fields} />
       </div>
 
       {/* Right: preview */}

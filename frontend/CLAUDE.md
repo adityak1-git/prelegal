@@ -8,7 +8,7 @@ The available documents are covered in the catalog.json file in the project root
 
 @catalog.json
 
-The current implementation has the Mutual NDA Creator (one document type, no AI chat, no auth UI, no document persistence yet).
+The current implementation supports all 12 document types with AI chat (no auth UI, no document persistence yet).
 
 ## Development process
 
@@ -47,8 +47,11 @@ scripts/stop-windows.ps1
 
 ### Backend API endpoints
 - `GET  /api/health` — health check
+- `GET  /api/catalog` — returns the full document catalog (catalog.json)
+- `GET  /api/template-text/{doc_type}` — returns stripped plain-text of the template for a given doc type
 - `POST /api/auth/signup` — create account, returns JWT
 - `POST /api/auth/signin` — sign in, returns JWT
+- `POST /api/chat` — AI chat turn; accepts `doc_type`, `messages` history, and `field_values` (current filled fields), returns AI `message` + `field_updates` for the selected document
 
 ### Local development (without Docker)
 ```bash
@@ -73,6 +76,8 @@ cd frontend && npm run dev   # → http://localhost:3000
 | PL-1 | Legal document templates (12 types in `templates/`, `catalog.json`) | Done |
 | PL-2 | Mutual NDA Creator UI (form + live preview + PDF download) | Done |
 | PL-3 | V1 foundation: FastAPI backend, SQLite auth, Docker, scripts | Done |
+| PL-4 | AI chat for Mutual NDA (replaces form; Cerebras/OpenRouter structured outputs) | Done |
+| PL-5 | Expand AI chat to all 12 supported document types (dynamic `/create/[docType]` route) | Done |
 
-**Not yet built:** AI chat, document persistence, auth UI (login/signup pages), support for document types beyond Mutual NDA.
+**Not yet built:** Document persistence, auth UI (login/signup pages).
 

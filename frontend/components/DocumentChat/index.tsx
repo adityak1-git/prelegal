@@ -13,9 +13,10 @@ interface Props {
   docType: string;
   config: DocConfig;
   onChange: (updates: Record<string, string>) => void;
+  fieldValues: Record<string, string>;
 }
 
-export function DocumentChat({ docType, config, onChange }: Props) {
+export function DocumentChat({ docType, config, onChange, fieldValues }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ export function DocumentChat({ docType, config, onChange }: Props) {
       const res = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ doc_type: docType, messages: msgs }),
+        body: JSON.stringify({ doc_type: docType, messages: msgs, field_values: fieldValues }),
       });
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data: { message: string; field_updates: Record<string, string | null> } = await res.json();

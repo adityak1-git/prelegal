@@ -7,6 +7,10 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 echo "Building Prelegal Docker image..."
 docker build -t prelegal "$PROJECT_DIR"
 
+echo "Removing any existing container..."
+docker stop prelegal 2>/dev/null || true
+docker rm prelegal 2>/dev/null || true
+
 echo "Starting Prelegal container..."
 docker run -d \
   --name prelegal \

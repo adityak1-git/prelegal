@@ -26,16 +26,17 @@ export function NDAChat({ onChange }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  async function callChatAPI(msgs: Message[]) {
+  async function callChatAPI(msgs: Message[], currentFields: Record<string, string>) {
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ doc_type: 'mutual-nda', messages: msgs }),
+        body: JSON.stringify({ doc_type: 'mutual-nda', messages: msgs, field_values: currentFields }),
       });
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data: ChatResponse = await res.json();
@@ -49,6 +50,7 @@ export function NDAChat({ onChange }: Props) {
         }
       }
       if (Object.keys(updates).length > 0) {
+        setFieldValues(prev => ({ ...prev, ...updates as Record<string, string> }));
         onChange(updates);
       }
     } catch {
@@ -62,7 +64,7 @@ export function NDAChat({ onChange }: Props) {
   }
 
   useEffect(() => {
-    callChatAPI([]).then(() => inputRef.current?.focus());
+    callChatAPI([], {}).then(() => inputRef.current?.focus());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -78,7 +80,7 @@ export function NDAChat({ onChange }: Props) {
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInput('');
-    await callChatAPI(updatedMessages);
+    await callChatAPI(updatedMessages, fieldValues);
     inputRef.current?.focus();
   }
 

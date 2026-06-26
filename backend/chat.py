@@ -513,6 +513,7 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     doc_type: str = "mutual-nda"
     messages: list[ChatMessage]
+    field_values: dict[str, str] = {}
 
 
 class ChatResponse(BaseModel):
@@ -554,7 +555,16 @@ def chat(request: ChatRequest):
 
     InternalResponse = _make_internal_response_class(request.doc_type, config["fields"])
 
-    messages = [{"role": "system", "content": config["system_prompt"] + _ALWAYS_FOLLOW_UP}]
+    all_fields = config["fields"]
+    filled = [f for f in all_fields if request.field_values.get(f)]
+    missing = [f for f in all_fields if not request.field_values.get(f)]
+    field_status = (
+        f"\nCURRENT FIELD STATE:\n"
+        f"Already collected: {', '.join(filled) if filled else 'none'}\n"
+        f"Still needed: {', '.join(missing) if missing else 'none — document is complete'}\n"
+    )
+
+    messages = [{"role": "system", "content": config["system_prompt"] + field_status + _ALWAYS_FOLLOW_UP}]
     messages.extend([{"role": m.role, "content": m.content} for m in request.messages])
 
     response = completion(
