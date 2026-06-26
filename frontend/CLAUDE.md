@@ -52,6 +52,8 @@ scripts/stop-windows.ps1
 - `POST /api/auth/signup` — create account, returns JWT
 - `POST /api/auth/signin` — sign in, returns JWT
 - `POST /api/chat` — AI chat turn; accepts `doc_type`, `messages` history, and `field_values` (current filled fields), returns AI `message` + `field_updates` for the selected document
+- `POST /api/documents` — save a downloaded document to the authenticated user's history (requires `Authorization: Bearer <token>`)
+- `GET  /api/documents/me` — list the authenticated user's saved documents, ordered by date desc
 
 ### Local development (without Docker)
 ```bash
@@ -78,6 +80,21 @@ cd frontend && npm run dev   # → http://localhost:3000
 | PL-3 | V1 foundation: FastAPI backend, SQLite auth, Docker, scripts | Done |
 | PL-4 | AI chat for Mutual NDA (replaces form; Cerebras/OpenRouter structured outputs) | Done |
 | PL-5 | Expand AI chat to all 12 supported document types (dynamic `/create/[docType]` route) | Done |
+| PL-6 | Multi-user auth UI, document history, legal disclaimer, SaaS polish | Done |
 
-**Not yet built:** Document persistence, auth UI (login/signup pages).
+### PL-6 architecture notes
+
+**Auth:** `AuthProvider` context (`frontend/lib/auth-context.tsx`) stores JWT in `localStorage`. `AuthModal` handles sign in / sign up. `HeaderNav` (`frontend/components/HeaderNav.tsx`) is the shared header across all pages — replaces per-page inline headers.
+
+**Document history:** Saved automatically when a user downloads a PDF (only if signed in). `POST /api/documents` creates a record; `GET /api/documents/me` lists them. `/my-documents/` page (`frontend/app/my-documents/page.tsx`) shows history with re-download. Documents store `field_values` as JSON so the PDF can be regenerated client-side.
+
+**Soft gate:** Unauthenticated users can browse and chat freely. Downloads work without auth but don't save to history (info toast nudges them to sign in).
+
+**Toast system:** `ToastProvider` + `ToastContainer` (`frontend/lib/toast-context.tsx`, `frontend/components/ToastContainer.tsx`). Call `useToast().addToast(message, variant)` from any client component.
+
+**Download utility:** All PDF downloads go through `triggerBlobDownload(blob, filename)` in `frontend/lib/download-utils.ts`. Uses `pdf().toBlob()` from `@react-pdf/renderer` (not `PDFDownloadLink`) so a proper async callback exists for the save API call.
+
+**Legal disclaimer:** Amber banner at the bottom of `DocumentPreview` and a styled block in all PDF documents (`DocumentPdfDocument`, `NDAPdfDocument`).
+
+**TypeScript / Docker note:** `playwright.config.ts` and `tests/` are excluded from `tsconfig.json` (`exclude` array). Both import `@playwright/test` which is not in `package.json`; locally Node resolves it from the project root `node_modules`, but inside Docker only `frontend/node_modules` exists, causing a TS2307 build failure. Always keep Playwright files excluded from the Next.js TS compilation.
 
