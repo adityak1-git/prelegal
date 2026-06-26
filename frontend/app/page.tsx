@@ -1,15 +1,13 @@
 import Link from 'next/link';
 import { DOC_CONFIGS } from '@/lib/doc-configs';
+import { HeaderNav } from '@/components/HeaderNav';
 
 export default function Home() {
   const docs = Object.values(DOC_CONFIGS);
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-200 shrink-0">
-        <span className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Prelegal</span>
-        <span className="text-xs text-gray-400">Powered by Common Paper</span>
-      </header>
+      <HeaderNav />
 
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-5xl mx-auto px-6 py-12">

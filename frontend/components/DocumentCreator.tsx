@@ -8,14 +8,11 @@ import { DocumentPreview } from '@/components/DocumentPreview';
 
 const DocumentDownloadButton = dynamic(
   () => import('./DocumentDownloadButton').then(m => m.DocumentDownloadButton),
-  {
-    ssr: false,
-    loading: () => (
-      <button disabled className="rounded-md bg-[#209dd7] px-4 py-2 text-sm font-medium text-white opacity-50 cursor-wait">
-        Loading…
-      </button>
-    ),
-  },
+  { ssr: false, loading: () => (
+    <button disabled className="rounded-md bg-[#209dd7] px-4 py-2 text-sm font-medium text-white opacity-50 cursor-wait">
+      Loading…
+    </button>
+  )},
 );
 
 interface Props {

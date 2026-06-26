@@ -1,51 +1,85 @@
 'use client';
 
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import { NDAPdfDocument } from './NDAPdfDocument';
+import { useState } from 'react';
+import { pdf } from '@react-pdf/renderer';
 import { NDAFormData } from '@/lib/nda-types';
+import { useAuth } from '@/lib/auth-context';
+import { useToast } from '@/lib/toast-context';
+import { saveDocument } from '@/lib/documents-api';
+import { triggerBlobDownload } from '@/lib/download-utils';
+import { NDAPdfDocument } from './NDAPdfDocument';
 
 interface Props {
   data: NDAFormData;
 }
 
 export function NDADownloadButton({ data }: Props) {
-  const filename = [
-    data.party1Company || data.party1Name,
-    data.party2Company || data.party2Name,
-  ]
-    .filter(Boolean)
-    .join('-')
-    .replace(/\s+/g, '-')
-    .toLowerCase() || 'mutual-nda';
+  const [loading, setLoading] = useState(false);
+  const auth = useAuth();
+  const { addToast } = useToast();
+
+  const getFilename = () => {
+    const base = [data.party1Company || data.party1Name, data.party2Company || data.party2Name]
+      .filter(Boolean)
+      .join('-')
+      .replace(/\s+/g, '-')
+      .toLowerCase();
+    return (base || 'mutual-nda') + '.pdf';
+  };
+
+  async function handleDownload() {
+    setLoading(true);
+    try {
+      const filename = getFilename();
+      const blob = await pdf(<NDAPdfDocument data={data} />).toBlob();
+
+      const token = auth.status === 'authenticated' ? auth.token : null;
+      if (token) {
+        try {
+          await saveDocument(token, {
+            doc_type: 'mutual-nda',
+            doc_name: 'Mutual Non-Disclosure Agreement',
+            filename,
+            field_values: data as unknown as Record<string, string>,
+          });
+          addToast('Document saved to your history', 'success');
+        } catch {
+          addToast('Document downloaded but could not be saved to history', 'error');
+        }
+      } else {
+        addToast('Sign in to save documents to your history', 'info');
+      }
+
+      triggerBlobDownload(blob, filename);
+    } catch {
+      addToast('Failed to generate PDF. Please try again.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <PDFDownloadLink
-      document={<NDAPdfDocument data={data} />}
-      fileName={`${filename}.pdf`}
+    <button
+      onClick={handleDownload}
+      disabled={loading}
+      className="flex items-center gap-2 rounded-md bg-[#209dd7] px-4 py-2 text-sm font-medium text-white hover:bg-[#1a8abf] disabled:opacity-50 transition-colors cursor-pointer disabled:cursor-wait"
     >
-      {({ loading }) => (
-        <button
-          disabled={loading}
-          className="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer disabled:cursor-wait"
-        >
-          {loading ? (
-            <>
-              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Preparing PDF…
-            </>
-          ) : (
-            <>
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a1 1 0 001 1h16a1 1 0 001-1v-3" />
-              </svg>
-              Download PDF
-            </>
-          )}
-        </button>
+      {loading ? (
+        <>
+          <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          Preparing PDF…
+        </>
+      ) : (
+        <>
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a1 1 0 001 1h16a1 1 0 001-1v-3" />
+          </svg>
+          Download PDF
+        </>
       )}
-    </PDFDownloadLink>
+    </button>
   );
 }
